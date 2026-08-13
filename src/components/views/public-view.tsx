@@ -15,13 +15,13 @@ import { useApp } from "@/lib/store";
 import { cn } from "@/lib/utils";
 import { format } from "date-fns";
 
-const STATE_STYLE: Record<string, { ring: string; bg: string; dot: string; label: string }> = {
-  AVAILABLE: { ring: "ring-emerald-500/40 hover:ring-emerald-500", bg: "bg-emerald-500/10 hover:bg-emerald-500/20", dot: "bg-emerald-500", label: "Available" },
-  RESERVED: { ring: "ring-rose-500/40", bg: "bg-rose-500/10", dot: "bg-rose-500", label: "Reserved" },
-  OCCUPIED: { ring: "ring-sky-500/40", bg: "bg-sky-500/15", dot: "bg-sky-500", label: "Occupied" },
-  PENDING: { ring: "ring-amber-500/40", bg: "bg-amber-500/10", dot: "bg-amber-500", label: "Pending" },
-  BLOCKED: { ring: "ring-zinc-400/40", bg: "bg-zinc-400/10", dot: "bg-zinc-400", label: "Blocked" },
-  EMERGENCY: { ring: "ring-violet-500/40", bg: "bg-violet-500/10", dot: "bg-violet-500", label: "Emergency" },
+const STATE_STYLE: Record<string, { ring: string; bg: string; dot: string; label: string; badge: string }> = {
+  AVAILABLE: { ring: "ring-emerald-500/40 hover:ring-emerald-500", bg: "bg-emerald-500/10 hover:bg-emerald-500/20", dot: "bg-emerald-500", label: "Available", badge: "bg-emerald-100 text-emerald-700 dark:bg-emerald-950 dark:text-emerald-300" },
+  RESERVED: { ring: "ring-rose-500/40", bg: "bg-rose-500/10", dot: "bg-rose-500", label: "Reserved", badge: "bg-rose-100 text-rose-700 dark:bg-rose-950 dark:text-rose-300" },
+  OCCUPIED: { ring: "ring-sky-500/40", bg: "bg-sky-500/15", dot: "bg-sky-500", label: "Occupied", badge: "bg-sky-100 text-sky-700 dark:bg-sky-950 dark:text-sky-300" },
+  PENDING: { ring: "ring-amber-500/40", bg: "bg-amber-500/10", dot: "bg-amber-500", label: "Pending", badge: "bg-amber-100 text-amber-700 dark:bg-amber-950 dark:text-amber-300" },
+  BLOCKED: { ring: "ring-zinc-400/40", bg: "bg-zinc-400/10", dot: "bg-zinc-400", label: "Blocked", badge: "bg-zinc-200 text-zinc-600 dark:bg-zinc-800 dark:text-zinc-300" },
+  EMERGENCY: { ring: "ring-violet-500/40", bg: "bg-violet-500/10", dot: "bg-violet-500", label: "Emergency", badge: "bg-violet-100 text-violet-700 dark:bg-violet-950 dark:text-violet-300" },
 };
 
 function SeatNode({ seat, showDetails }: { seat: any; showDetails: boolean }) {
@@ -37,10 +37,10 @@ function SeatNode({ seat, showDetails }: { seat: any; showDetails: boolean }) {
         className={cn("group relative flex flex-col rounded-2xl ring-2 p-2.5 gap-1.5", style.ring, style.bg)}
         title={`${seat.number} · ${style.label} · ${b.name}`}
       >
-        {/* Top row: seat number + status dot */}
+        {/* Top row: seat number + status badge */}
         <div className="flex items-center justify-between">
           <span className="text-[10px] font-bold leading-none">{seat.number}</span>
-          <span className={cn("size-1.5 rounded-full", style.dot)} />
+          <span className={cn("text-[9px] font-bold px-2 py-0.5 rounded-full", style.badge)}>{style.label}</span>
         </div>
         {seat.isEmergency && (
           <span className="absolute -top-1.5 -right-1.5 text-[9px] bg-violet-500 text-white rounded-full px-1.5 py-0.5 font-bold">EM</span>
@@ -73,15 +73,18 @@ function SeatNode({ seat, showDetails }: { seat: any; showDetails: boolean }) {
     );
   }
 
-  // Public (not logged in): show booked-at time only, no employee details
+  // Public (not logged in): show seat number + status badge + booked-at time
   return (
     <div
-      className={cn("group relative flex aspect-square w-full flex-col items-center justify-center gap-1 rounded-2xl ring-2 p-2", style.ring, style.bg)}
+      className={cn("group relative flex flex-col items-center justify-center gap-2 rounded-2xl ring-2 p-3 min-h-[100px]", style.ring, style.bg)}
       title={`${seat.number} · ${style.label}${timeLabel ? ` · Booked ${timeLabel}` : ""}`}
     >
       <Sofa className={cn("size-5 sm:size-6", seat.isEmergency ? "text-violet-500" : "text-foreground/70")} />
-      <span className="text-[10px] font-bold leading-none">{seat.number}</span>
-      <span className={cn("size-1.5 rounded-full", style.dot)} />
+      <span className="text-xs font-bold leading-none">{seat.number}</span>
+      {/* Status badge — opaque background with high-contrast text */}
+      <span className={cn("text-[10px] font-bold px-2 py-0.5 rounded-full", style.badge)}>
+        {style.label}
+      </span>
       {seat.isEmergency && (
         <span className="absolute -top-1.5 -right-1.5 text-[9px] bg-violet-500 text-white rounded-full px-1.5 py-0.5 font-bold">EM</span>
       )}
